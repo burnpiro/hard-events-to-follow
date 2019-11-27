@@ -1,0 +1,487 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="A modern guide to Events in JavaScript">
+  <meta name="author" content="Kemal Erdem">
+
+  <title>Hard Events to follow</title>
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/reveal.css">
+  <link rel="stylesheet" href="css/theme/beige.css">
+  <link rel="stylesheet" href="css/custom.css">
+
+  <!-- Theme used for syntax highlighting of code -->
+  <link rel="stylesheet" href="lib/css/an-old-hope.css">
+
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+    document.getElementsByTagName('head')[0].appendChild(link);
+  </script>
+
+  <!--[if lt IE 9]>
+  <script src="lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+<div class="reveal">
+  <div class="slides">
+    <section>
+      <p><strong>Hard Events to follow...</strong></p>
+      <img src="assets/events-hard-to-follow.png" style="width: 60%;" class="plain">
+      <p>
+        <small>Kemal Erdem | @burnpiro</small><br/>
+        <small><a href="https://erdem.pl">https://erdem.pl</a> <br/><a href="https://github.com/burnpiro">https://github.com/burnpiro</a></small><br/>
+      </p>
+      <aside class="notes"></aside>
+    </section>
+    <section>
+      <h2>What are Events?</h2>
+      <p class="fragment">Any object that implements <a href="https://dom.spec.whatwg.org/#interface-event"><b>Event
+        Interface</b></a></p>
+    </section>
+    <section>
+      <h3>Event Interface</h3>
+			<pre><code class="hljs java" data-trim data-line-numbers="2,4-6,11-14" style="word-wrap: break-word;">interface Event {
+  constructor(DOMString type, optional EventInit eventInitDict = {});
+
+  void stopPropagation();
+  void stopImmediatePropagation();
+  void preventDefault();
+
+  readonly attribute DOMString type;
+  readonly attribute EventTarget? target;
+  readonly attribute EventTarget? currentTarget;
+  readonly attribute unsigned short eventPhase;
+  readonly attribute boolean bubbles;
+  readonly attribute boolean cancelable;
+  readonly attribute boolean defaultPrevented;
+  readonly attribute boolean composed;
+}
+					</code></pre>
+    </section>
+    <section>
+      <img src="assets/doom-tree.png" class="plain">
+			<pre><code class="hljs html" data-trim style="word-wrap: break-word;">
+<div id="container">
+  <div id="dataContainer">
+    <div id="clickedData"></div>
+  </div>
+  <button id="dataSubmitter">Add Data</button>
+</div>
+					</code></pre>
+    </section>
+    <section>
+      <h3>Adding Event Listener</h3>
+      <pre><code class="hljs javascript" data-trim style="word-wrap: break-word;">
+addEventListener(type, callback, options)
+
+removeEventListener(type, callback, options)
+					</code></pre>
+      <pre class="fragment"><code class="hljs javascript" data-trim style="word-wrap: break-word;">
+const button = document.getElementById('dataSubmitter');
+
+button.addEventListener('click', e => {
+  console.log('clicked');
+});
+button.addEventListener('click', e => {
+  console.log('clicked second');
+});
+					</code></pre>
+      <aside class="notes">
+        Only to DOM elements with EventTarget interface
+      </aside>
+    </section>
+    <section>
+      <h3>Removing Event Listener</h3>
+      <pre class="fragment"><code class="hljs javascript" data-trim style="word-wrap: break-word;">
+const button = document.getElementById('dataSubmitter');
+
+const testMethod = () => {
+  console.log("first click");
+};
+
+button.addEventListener("click", testMethod);
+button.addEventListener("click", () => {
+  console.log("second click");
+});
+
+button.removeEventListener("click", testMethod);
+					</code></pre>
+      <pre class="fragment"><code class="hljs javascript" data-trim style="word-wrap: break-word;">
+// I don't work :(
+button.removeEventListener("click");
+					</code></pre>
+      <pre class="fragment"><code class="hljs javascript" data-trim style="word-wrap: break-word;">
+// Neither do I :(
+button.removeEventListener("click", () => {
+  console.log("second click");
+});
+					</code></pre>
+      <aside class="notes">
+        Only to DOM elements with EventTarget interface
+      </aside>
+    </section>
+
+    <section>
+      <h3>Event Listener List</h3>
+      <img src="assets/event-listener-list-bubble.png" class="plain">
+      <aside class="notes">
+      </aside>
+    </section>
+
+    <section>
+      <h3>Bubble Event</h3>
+      <img src="assets/bubble-events.gif" class="plain">
+      <aside class="notes">
+      </aside>
+    </section>
+    <section>
+      <h3>What are our options?</h3>
+      <img src="assets/panther-look.png" class="plain" style="margin: 0 0 -72px;">
+      <pre><code class="hljs javascript" data-trim style="word-wrap: break-word;" data-line-numbers="7-10">
+container.addEventListener(
+  'click',
+  e => {
+    console.log("container capture 'click'");
+  },
+  {
+    capture: false,
+    passive: false,
+    once: false,
+    removed: false
+  }
+);
+					</code></pre>
+      <aside class="notes">
+        Only to DOM elements with EventTarget interface
+      </aside>
+    </section>
+    <section>
+      <h3>Event Phases</h3>
+      <pre><code class="hljs java" data-trim style="word-wrap: break-word;">
+// Event Interface
+const unsigned short NONE = 0;
+const unsigned short CAPTURING_PHASE = 1; // true
+const unsigned short AT_TARGET = 2; // true || false
+const unsigned short BUBBLING_PHASE = 3; // false
+readonly attribute unsigned short eventPhase;
+					</code></pre>
+      <aside class="notes">
+        Only to DOM elements with EventTarget interface
+      </aside>
+    </section>
+    <section>
+      <h3>Event Listener notation</h3>
+      <p>[event name]<b style="color: red"> (</b>[creation order]<b style="color: red">)</b></p>
+      <img src="assets/event-notation.png" class="plain" style="min-width: 20%">
+      <pre><code class="hljs javascript" data-line-numbers="2" data-trim style="word-wrap: break-word;">
+button.addEventListener("click", testMethod);
+button.addEventListener("click", secondMethod);
+					</code></pre>
+      <aside class="notes">
+      </aside>
+    </section>
+    <section>
+      <h3>Event Pass</h3>
+      <img src="assets/bubble-capture.gif" class="plain">
+      <aside class="notes">
+      </aside>
+    </section>
+    <section>
+      <img src="assets/pink-surprised.png" class="plain hide-mobile" style="max-height: 25vh; position: absolute; right: 0.25rem">
+      <p>
+        <b style="padding-right: 6rem">Why "Capture" is called after "Bubble"?</b>
+      </p>
+      <img src="assets/submiter-event-order.png" class="plain">
+      <pre><code class="hljs javascript" data-trim style="word-wrap: break-word;">
+// Current order
+button.addEventListener("click", testMethod);
+button.addEventListener("click", secondMethod);
+button.addEventListener("click", thirdMethod, { capture: true });
+					</code></pre>
+      <pre class="fragment"><code class="hljs javascript" data-trim style="word-wrap: break-word;">
+// New order
+button.addEventListener("click", testMethod);
+button.addEventListener("click", thirdMethod, { capture: true });
+button.addEventListener("click", secondMethod);
+					</code></pre>
+      <aside class="notes">
+      </aside>
+    </section>
+    <section>
+      <img src="assets/pink-stop.png" class="plain hide-mobile" style="max-height: 30vh;">
+      <p>
+        <b>Let's stop our event!</b>
+      </p>
+      <pre><code class="hljs javascript" data-trim style="word-wrap: break-word;">
+e.stopPropagation()
+e.stopImmediatePropagation()
+					</code></pre>
+      <aside class="notes">
+      </aside>
+    </section>
+    <section>
+      <p>
+        <b>e.stopPropagation()</b>
+      </p>
+      <pre><code class="hljs javascript" data-trim style="word-wrap: break-word;">
+button.addEventListener('click', e => {
+  console.log('clicked first');
+  e.stopPropagation();
+});
+button.addEventListener('click', e => {
+  console.log('clicked second');
+});
+button.addEventListener(
+  'click',
+  e => {
+    console.log("button capture 'click'");
+  },
+  {
+    capture: true,
+  }
+);
+					</code></pre>
+      <aside class="notes">
+      </aside>
+    </section>
+    <section>
+      <img src="assets/stop-propagation.gif" class="plain">
+      <aside class="notes">
+      </aside>
+    </section>
+    <section>
+      <p>
+        <b>e.stopImmediatePropagation()</b>
+      </p>
+      <pre><code class="hljs javascript" data-trim style="word-wrap: break-word;">
+button.addEventListener('click', e => {
+  console.log('clicked first');
+  e.stopImmediatePropagation();
+});
+button.addEventListener('click', e => {
+  console.log('clicked second');
+});
+button.addEventListener(
+  'click',
+  e => {
+    console.log("button capture 'click'");
+  },
+  {
+    capture: true,
+  }
+);
+					</code></pre>
+      <aside class="notes">
+      </aside>
+    </section>
+    <section>
+      <img src="assets/stop-immediate-propagation.gif" class="plain">
+      <aside class="notes">
+      </aside>
+    </section>
+    <section data-transition="none">
+      <h3>What about "passive" and "once" event listeners?</h3>
+      <pre><code class="hljs javascript" data-trim style="word-wrap: break-word;" data-line-numbers="9-10">
+container.addEventListener(
+  'click',
+  e => {
+    console.log("container capture 'click'");
+    e.stopPropagation();
+  },
+  {
+    capture: false,
+    passive: false,
+    once: false,
+    removed: false
+  }
+);
+					</code></pre>
+      <aside class="notes">
+        Only to DOM elements with EventTarget interface
+      </aside>
+    </section>
+    <section data-transition="none">
+      <h3>What about "passive" and "once" event listeners?</h3>
+      <pre><code class="hljs javascript" data-trim style="word-wrap: break-word;" data-line-numbers="5,9">
+container.addEventListener(
+  'click',
+  e => {
+    console.log("container capture 'click'");
+    e.stopPropagation();
+  },
+  {
+    capture: false,
+    passive: true,
+    once: false,
+    removed: false
+  }
+);
+					</code></pre>
+      <aside class="notes">
+        Only to DOM elements with EventTarget interface
+      </aside>
+    </section>
+    <section data-transition="none">
+      <h3>What about "passive" and "once" event listeners?</h3>
+      <pre><code class="hljs javascript" data-trim style="word-wrap: break-word;" data-line-numbers="10">
+container.addEventListener(
+  'click',
+  e => {
+    console.log("container capture 'click'");
+    e.stopPropagation();
+  },
+  {
+    capture: false,
+    passive: false,
+    once: true,
+    removed: false
+  }
+);
+					</code></pre>
+      <aside class="notes">
+        Only to DOM elements with EventTarget interface
+      </aside>
+    </section>
+    <section>
+      <p>
+        <b>e.preventDefault()</b>
+      </p>
+      <pre><code class="hljs javascript" data-trim style="word-wrap: break-word;">
+e.preventDefault();
+e.stopPropagation();
+					</code></pre>
+      <video data-autoplay src="assets/prevent-default.webm" loop></video>
+      <aside class="notes">
+      </aside>
+    </section>
+    <section>
+      <p>
+        <b>Great but can we use it somehow?</b>
+      </p>
+      <img src="assets/use-events.png" class="plain" style="max-height: 50vh">
+      <aside class="notes">
+      </aside>
+    </section>
+    <section>
+      <p><b>CustomEvent()</b></p>
+      <pre><code class="hljs java" data-trim style="word-wrap: break-word;">
+interface CustomEvent : Event {
+  constructor(
+        DOMString type,
+        optional CustomEventInit eventInitDict = {}
+  );
+
+  readonly attribute any detail;
+}
+					</code></pre>
+      <aside class="notes">
+      </aside>
+    </section>
+    <section>
+      <img src="assets/new-dom-tree.png" class="plain" style="max-height: 90vh">
+      <aside class="notes">
+      </aside>
+    </section>
+    <section>
+      <h3>Dispatch new custom event</h3>
+      <pre><code class="hljs javascript" data-trim style="word-wrap: break-word;">
+const clickedData = document.getElementById('clickedData');
+const dataEvent = new CustomEvent('addData', {
+  detail: { test: 'test2' },
+});
+
+clickedData.dispatchEvent(dataEvent);
+					</code></pre>
+      <aside class="notes">
+      </aside>
+    </section>
+    <section>
+      <img src="assets/dispatch-capture-event.gif" class="plain" style="max-height: 90vh">
+      <aside class="notes">
+      </aside>
+    </section>
+    <section>
+      <h3>Let's fix our event</h3>
+      <pre><code class="hljs javascript" data-trim style="word-wrap: break-word;">
+new CustomEvent('addData', {
+  bubbles: true,
+  detail: { test: 'test2' },
+});
+					</code></pre>
+      <aside class="notes">
+      </aside>
+    </section>
+    <section>
+      <img src="assets/dispatch-bubble-event.gif" class="plain" style="max-height: 90vh">
+      <aside class="notes">
+      </aside>
+    </section>
+    <section>
+      <p><b>When we might want to use custom events?</b></p>
+      <pre><code class="hljs html" data-trim style="word-wrap: break-word;">
+<div id="app">
+  <div id="addUserData">
+    <div id="prefillAfterReset">
+      <form>
+        {...}
+      </form>
+    </div>
+  </div>
+</div>
+					</code></pre>
+      <aside class="notes">
+      </aside>
+    </section>
+    <section>
+      <h2>Thanks</h2>
+      <h4>Questions?</h4>
+      <small>Kemal Erdem | @burnpiro</small><br/>
+      <small><a href="https://erdem.pl">https://erdem.pl</a> <br/><a href="https://github.com/burnpiro">https://github.com/burnpiro</a></small><br/>
+      <img src="assets/pink-end.png" class="plain hide-mobile" style="max-height: 70vh; position: absolute; left: 2rem; top: 20vh; z-index: -1">
+    </section>
+  </div>
+</div>
+
+<script src="js/reveal.js"></script>
+
+<script>
+  // More info about config & dependencies:
+  // - https://github.com/hakimel/reveal.js#configuration
+  // - https://github.com/hakimel/reveal.js#dependencies
+  Reveal.initialize({
+    // Display a presentation progress bar
+    progress: false,
+    hash: true,
+    history: true,
+    slideNumber: true,
+    width: "100%",
+    height: "100%",
+    margin: 0,
+    minScale: 1,
+    maxScale: 1,
+    dependencies: [
+      // Interpret Markdown in <section> elements
+      {src: 'plugin/markdown/marked.js'},
+      {src: 'plugin/markdown/markdown.js'},
+      // Speaker notes
+      {src: 'plugin/notes/notes.js', async: true},
+      // Syntax highlight for <code> elements
+      {src: 'plugin/highlight/highlight.js', async: true},
+      // MathJax
+      {src: 'plugin/math/math.js', async: true}
+    ]
+  });
+</script>
+</body>
+</html>
