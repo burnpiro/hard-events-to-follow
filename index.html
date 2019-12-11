@@ -51,7 +51,7 @@
     </section>
     <section>
       <h3>Event Interface</h3>
-			<pre><code class="hljs java" data-trim data-line-numbers="2,4-6,11-14" style="word-wrap: break-word;">interface Event {
+			<pre><code class="hljs java" data-trim data-line-numbers="2,4-6,11-12,14" style="word-wrap: break-word;">interface Event {
   constructor(DOMString type, optional EventInit eventInitDict = {});
 
   void stopPropagation();
@@ -81,11 +81,24 @@
 					</code></pre>
     </section>
     <section>
-      <h3>Adding Event Listener</h3>
-      <pre><code class="hljs javascript" data-trim style="word-wrap: break-word;">
-addEventListener(type, callback, options)
+      <h3>Event Target</h3>
+      <pre><code class="hljs java" data-trim data-line-numbers="1,4-6" style="word-wrap: break-word;">
+interface EventTarget {
+  constructor();
 
-removeEventListener(type, callback, options)
+  void addEventListener(DOMString type, EventListener? callback, optional (AddEventListenerOptions or boolean) options = {});
+  void removeEventListener(DOMString type, EventListener? callback, optional (EventListenerOptions or boolean) options = {});
+  boolean dispatchEvent(Event event);
+};
+					</code></pre>
+      <aside class="notes">
+        Only to DOM elements with EventTarget interface
+      </aside>
+    </section>
+    <section>
+      <h3>Adding Event Listener</h3>
+      <pre><code class="hljs java" data-trim data-line-numbers="1,4-6" style="word-wrap: break-word;">
+  void addEventListener(string type, function callback, optional options = {});
 					</code></pre>
       <pre class="fragment"><code class="hljs javascript" data-trim style="word-wrap: break-word;">
 const button = document.getElementById('dataSubmitter');
@@ -186,7 +199,7 @@ readonly attribute unsigned short eventPhase;
       <img src="assets/event-notation.png" class="plain" style="min-width: 20%">
       <pre><code class="hljs javascript" data-line-numbers="2" data-trim style="word-wrap: break-word;">
 button.addEventListener("click", testMethod);
-button.addEventListener("click", secondMethod);
+button.addEventListener("click", secondMethod, { capture: true });
 					</code></pre>
       <aside class="notes">
       </aside>
@@ -427,15 +440,199 @@ new CustomEvent('addData', {
       <aside class="notes">
       </aside>
     </section>
-    <section>
+    <section data-transition="none">
       <p><b>When we might want to use custom events?</b></p>
       <pre><code class="hljs html" data-trim style="word-wrap: break-word;">
-<div id="app">
-  <div id="addUserData">
-    <div id="prefillAfterReset">
-      <form>
+<div id="messageApp">
+  <div id="userDataLayer">
+    <div id="conversationsContainer">
+      <div class="conversationsContainer">
         {...}
-      </form>
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+    </div>
+  </div>
+</div>
+					</code></pre>
+      <aside class="notes">
+      </aside>
+    </section>
+    <section data-transition="none">
+      <p><b>When we might want to use custom events?</b></p>
+      <pre><code class="hljs html" data-trim data-line-numbers="1" style="word-wrap: break-word;">
+<div id="messageApp">
+  <div id="userDataLayer">
+    <div id="conversationsContainer">
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+    </div>
+  </div>
+</div>
+					</code></pre>
+      <aside class="notes">
+      </aside>
+    </section>
+    <section data-transition="none">
+      <p><b>When we might want to use custom events?</b></p>
+      <pre><code class="hljs html" data-trim data-line-numbers="2" style="word-wrap: break-word;">
+<div id="messageApp">
+  <div id="userDataLayer">
+    <div id="conversationsContainer">
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+    </div>
+  </div>
+</div>
+					</code></pre>
+      <aside class="notes">
+      </aside>
+    </section>
+    <section data-transition="none">
+      <p><b>When we might want to use custom events?</b></p>
+      <pre><code class="hljs html" data-trim data-line-numbers="3" style="word-wrap: break-word;">
+<div id="messageApp">
+  <div id="userDataLayer">
+    <div id="conversationsContainer">
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+    </div>
+  </div>
+</div>
+					</code></pre>
+      <aside class="notes">
+      </aside>
+    </section>
+    <section data-transition="none">
+      <p><b>When we might want to use custom events?</b></p>
+      <pre><code class="hljs html" data-trim data-line-numbers="4-6" style="word-wrap: break-word;">
+<div id="messageApp">
+  <div id="userDataLayer">
+    <div id="conversationsContainer">
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+    </div>
+  </div>
+</div>
+					</code></pre>
+      <aside class="notes">
+      </aside>
+    </section>
+    <section data-transition="none">
+      <p><b>When we might want to use custom events?</b></p>
+      <pre><code class="hljs html" data-trim data-line-numbers="3" style="word-wrap: break-word;">
+<div id="messageApp">
+  <div id="userDataLayer">
+    <div id="conversationsContainer">
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+    </div>
+  </div>
+</div>
+					</code></pre>
+      <aside class="notes">
+      </aside>
+    </section>
+    <section data-transition="none">
+      <p><b>When we might want to use custom events?</b></p>
+      <pre><code class="hljs html" data-trim data-line-numbers="2" style="word-wrap: break-word;">
+<div id="messageApp">
+  <div id="userDataLayer">
+    <div id="conversationsContainer">
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+    </div>
+  </div>
+</div>
+					</code></pre>
+      <aside class="notes">
+      </aside>
+    </section>
+    <section data-transition="none">
+      <p><b>When we might want to use custom events?</b></p>
+      <pre><code class="hljs html" data-trim data-line-numbers="1" style="word-wrap: break-word;">
+<div id="messageApp">
+  <div id="userDataLayer">
+    <div id="conversationsContainer">
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
+      <div class="conversationsContainer">
+        {...}
+      </div>
     </div>
   </div>
 </div>
